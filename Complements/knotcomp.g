@@ -2,8 +2,7 @@
 ######################## Regular CW-complex of knot complements #########################
 #########################################################################################
 ################# Input: a list of (signed) integer pairs corresponding #################
-######################## to the lengths of horizontal segments of a knot/link ###########
-######################## and the depth of each segment in 4-space. ###################### 
+######################## to the lengths of horizontal segments of a knot/link ########### 
 #########################################################################################
 ################ Output: a regular CW-complex representing the complement of ############
 ######################## the input knot/link. ###########################################
