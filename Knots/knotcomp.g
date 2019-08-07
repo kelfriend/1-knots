@@ -11,7 +11,7 @@
 KnotComplement:=function(D)
     local
         len, signless, PuncturedDisk,
-        P, DxI, Patches;
+        P, grid, PuncturedTube;
 
     len:=Length(D);
     signless:=List(D,x->[AbsInt(x[1]),AbsInt(x[2])]);
@@ -22,7 +22,7 @@ KnotComplement:=function(D)
             CornerConfiguration, bound,
             bigGrid, GridFill, j, tick,
             hslice, vslice, k, 0c, Orient,
-            path, FaceTrace;
+            path, FaceTrace, cgrid;
 
         grid:=List([1..len],x->List([1..len],y->0));
         for i in [1..len]
@@ -324,8 +324,8 @@ KnotComplement:=function(D)
 
             unselectedEdges:=List([1..Length(bound[2])-2]);
             unselectedEdges:=Concatenation(unselectedEdges,unselectedEdges);
-            Add(unselectedEdges,Length(bound[2])-1); # list of two of each edge except for the
-            Add(unselectedEdges,Length(bound[2])); # circumferential edges
+            Add(unselectedEdges,Length(bound[2])-1); # list of two of each edge except
+            Add(unselectedEdges,Length(bound[2])); # for the circumferential edges
 
             ClockwiseTurn:=function(p,e)
 # inputs the orientation of a node and the number of an edge in that list,
@@ -343,7 +343,7 @@ KnotComplement:=function(D)
             end;
 
             while unselectedEdges<>[]
-                do
+                do # main loop, locates all 2-cells
                 x:=Random([1..Length(bound[2])]); # select a random edge
                 while (not x in unselectedEdges) and (not e1 in unselectedEdges)
                     do # reselect edge if it already has two 2-cells in its coboundary
@@ -376,10 +376,260 @@ KnotComplement:=function(D)
             return bound;
         end;
 
-        return FaceTrace(path);
+        cgrid:=grid*0; # this is needed at the very end when
+        for i in [1..Length(grid)] # patching the tubes together
+            do
+            for j in [1..Length(grid)]
+                do
+                cgrid[i][j]:=CornerConfiguration(i,j);
+            od;
+        od;
+
+        return [FaceTrace(path),cgrid];
     end;
 
     P:=PuncturedDisk(D);
+    grid:=P[2];
+    P:=P[1];
 
-    return P;
+    PuncturedTube:=function(bound)
+        local
+            l0, l1, l2, DuplicateDisk,
+            JoinDisks, Patch, prepatch,
+            postpatch, Cap;
+
+        l0:=Length(bound[1]);
+        l1:=Length(bound[2]);
+        l2:=Length(bound[3]);
+
+        DuplicateDisk:=function(bound)
+            local # creates a disjoint copy of the punctured
+                i, edges2, faces2; # disk and concatenates the two
+
+            for i in [1..l0]
+                do
+                Add(bound[1],[1,0]);
+            od;
+
+            edges2:=List(ShallowCopy(bound[2]),x->[2,x[2]+l0,x[3]+l0]);
+            bound[2]:=Concatenation(bound[2],edges2);
+
+            faces2:=List(ShallowCopy(bound[3]),
+            x->Concatenation([x[1]],x{[2..Length(x)]}+l1));
+            bound[3]:=Concatenation(bound[3],faces2);
+
+            return bound;
+        end;
+
+        bound:=DuplicateDisk(bound);
+
+        JoinDisks:=function(bound)
+# patch together the two disks via 1-cells, 2-cells & 3-cells
+# mathematically speaking, form the space P x I where I is the unit interval
+            local
+                i, x, y, 3cell;
+
+            for i in [1..l0]
+                do # connect the 2 disks by 1-cells
+                Add(bound[2],[2,i,l0+i]);
+            od;
+
+            for i in [1..l1]
+                do # for each base 1-cell, form a 2-cell
+                x:=bound[2][i][2];
+                y:=bound[2][i][3];
+                Add(bound[3],[4,i,l1+i,(l1*2)+x,(l1*2)+y]);
+            od;
+
+            for i in [1..l2]
+                do # form a 3-cell from each 2-cell in the base disk
+                x:=List(bound[3][i]{[2..Length(bound[3][i])]},y->y+(2*l2));
+                3cell:=Concatenation([i,l2+i],x);
+                Add(3cell,Length(3cell),1);
+                Add(bound[4],3cell);
+            od;
+
+            return bound;
+        end;
+
+        bound:=JoinDisks(bound);
+
+        prepatch:=Length(bound[3]);
+        postpatch:=0;
+
+        Patch:=function(bound)
+            local # close the tubes to complete the construction
+                loops, horizontals, verticals, i,
+                lst, htube, h1, h2, vtube, x,
+                cycle, loopless;
+
+            loops:=Filtered(
+                [1..l1-4],
+                x->Length(Positions(bound[2],bound[2][x]))>1 and bound[2][x][2]<>1
+            );
+
+            horizontals:=Filtered(
+                [1..l1-4],
+                x->bound[2][x][2]=bound[2][x][3]-1
+            );
+
+            verticals:=Filtered(
+                [1..l1-4],
+                x->not (x in loops or x in horizontals)
+            );
+            verticals:=verticals+l1;
+
+            for i in [1..Length(loops)/4]
+                do
+                lst:=[0,0];
+                if 1 in grid[i]
+                    then # check for corner configuration, this is important in deciding
+                    lst[1]:=2; # which loop to use in the 2-cell (top/bottom)
+                fi;
+                if 2 in grid[i]
+                    then
+                    lst[2]:=4;
+                fi;
+                if 3 in grid[i]
+                    then
+                    lst[1]:=1;
+                fi;
+                if 4 in grid[i]
+                    then
+                    lst[2]:=3;
+                fi;
+
+                htube:=loops{lst+4*(i-1)};
+                h1:=Filtered(
+                    horizontals,
+                    x->bound[2][x][2] in [bound[2][htube[1]][2]..bound[2][htube[2]][2]]
+                );
+                h2:=Filtered(
+                    horizontals,
+                    x->bound[2][x][2] in [bound[2][htube[1]][3]..bound[2][htube[2]][3]]
+                );
+                htube:=Concatenation(htube,h1,h2);
+                Add(htube,Length(htube),1);
+                Add(bound[3],htube);
+            od;
+
+            postpatch:=Length(bound[3]);
+
+            loops:=loops+l1;
+
+            vtube:=[];
+            Add(vtube,verticals[1]);
+            x:=bound[2][verticals[1]][3];
+            cycle:=0;
+            loopless:=[];
+            for i in [2..Length(verticals)]
+                do
+                if bound[2][verticals[i]][2]=x
+                    then
+                    Add(vtube,verticals[i]);
+                    x:=bound[2][verticals[i]][3];
+                else
+                    cycle:=cycle+1;
+                    if cycle=2
+                        then
+                        cycle:=0;
+                        Add(loopless,vtube);
+                        vtube:=[];
+                    fi;
+                    x:=bound[2][verticals[i]][3];
+                    Add(vtube,verticals[i]);
+                fi;
+            od;
+            Add(loopless,vtube);
+
+            for i in loopless
+                do
+                Add(i,Filtered(loops,y->bound[2][i[1]][2] in bound[2][y]{[2,3]})[1]);
+                Add(i,Filtered(
+                    loops,
+                    y->bound[2][i[Length(i)-1]][3] in bound[2][y]{[2,3]})[2]
+                );
+                Add(i,Length(i),1);
+                Add(bound[3],i);
+            od;
+
+            return bound;
+        end;
+
+        bound:=Patch(bound);
+
+        Cap:=function(bound)
+            local
+                bottom, btm, top, tp,
+                i, x, j, k;
+
+            Add(bound[3],[2,l1-1,l1]); # the upper and lower
+            Add(bound[3],[2,(2*l1)-1,2*l1]); # domes
+
+            bottom:=[1..l2];
+            btm:=[];
+            for i in bound[3]{[prepatch+1..postpatch]}
+                do
+                x:=(Length(i)-3)/2;
+                for j in [4..3+x]
+                    do
+                    for k in bottom
+                        do
+                        if 
+                        i[j] in bound[3][k]{[2..Length(bound[3][k])]} and
+                        i[j+x] in bound[3][k]{[2..Length(bound[3][k])]}
+                            then
+                            Add(btm,k);
+                        fi;
+                    od;
+                od;
+            od;
+
+            bottom:=Difference(bottom,btm);
+            bottom:=Concatenation(
+                bottom, # all base 2-cells without the overlap
+                [prepatch+1..postpatch], # the patch 2-cells enclosing the tubes
+                [Length(bound[3])-1] # the dome
+            );
+            Add(bottom,Length(bottom),1);
+
+            top:=[l2+1..2*l2];
+            tp:=[];
+            for i in bound[3]{[postpatch+1..Length(bound[3])-2]}
+                do
+                x:=(Length(i)-3)/2;
+                for j in [2..1+x]
+                    do
+                    for k in top
+                        do
+                        if
+                        i[j] in bound[3][k]{[2..Length(bound[3][k])]} and
+                        i[j+x] in bound[3][k]{[2..Length(bound[3][k])]}
+                            then
+                            Add(tp,k);
+                        fi;
+                    od;
+                od;
+            od;
+
+            top:=Difference(top,tp);
+            top:=Concatenation(
+                top,
+                [postpatch+1..Length(bound[3])-2],
+                [Length(bound[3])]
+            );
+            Add(top,Length(top),1);
+
+            Add(bound[4],bottom);
+            Add(bound[4],top);
+
+            return bound;
+        end;
+
+        return Cap(bound);
+    end;
+
+    P:=PuncturedTube(P);
+
+    return RegularCWComplex(P);
 end;
