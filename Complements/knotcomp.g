@@ -2,16 +2,24 @@
 ######################## Regular CW-complex of knot complements #########################
 #########################################################################################
 ################# Input: a list of (signed) integer pairs corresponding #################
-######################## to the lengths of horizontal segments of a knot/link ########### 
+######################## to the lengths of horizontal segments of a knot/link. ##########
 #########################################################################################
 ################ Output: a regular CW-complex representing the complement of ############
 ######################## the input knot/link. ###########################################
 ##################################################################################### k.k
-KnotComplement:=function(D)
+KnotComplement:=function(arg...)
     local
-        len, signless, PuncturedDisk,
+        rand, D, len, signless, PuncturedDisk,
         P, grid, PuncturedTube;
 
+    if Length(arg)>1
+        then
+        rand:=true;
+    else
+        rand:=false;
+    fi;
+
+    D:=arg[1];
     len:=Length(D);
     signless:=List(D,x->[AbsInt(x[1]),AbsInt(x[2])]);
 
@@ -317,8 +325,8 @@ KnotComplement:=function(D)
 
         FaceTrace:=function(path)
             local
-                unselectedEdges, x,
-                ClockwiseTurn, 2cell,
+                unselectedEdges, sourceORtarget,
+                x, ClockwiseTurn, 2cell,
                 sORt, ori, e1, e0, i;
 
             unselectedEdges:=List([1..Length(bound[2])-2]);
@@ -327,8 +335,8 @@ KnotComplement:=function(D)
             Add(unselectedEdges,Length(bound[2])); # for the circumferential edges
 
             ClockwiseTurn:=function(p,e)
-# inputs the orientation of a node and the number of an edge in that list,
-# ouputs the next nonzero edge in that list mod 12
+# inputs the orientation list of a node and the number of an edge in that list,
+# outputs the next edge after a clockwise turn
                 local
                     f;
                 
@@ -341,15 +349,31 @@ KnotComplement:=function(D)
                 return p[f];
             end;
 
+            sourceORtarget:=List([1..Length(bound[2])],y->[3,2]);
+            x:=1;
             while unselectedEdges<>[]
                 do # main loop, locates all 2-cells
-                x:=Random([1..Length(bound[2])]); # select a random edge
+                if rand
+                    then
+                    x:=Random([1..Length(bound[2])]); # select a random edge
+                fi;
                 while (not x in unselectedEdges) and (not e1 in unselectedEdges)
                     do # reselect edge if it already has two 2-cells in its coboundary
-                    x:=Random([1..Length(bound[2])]);
+                    if rand
+                        then
+                        x:=Random([1..Length(bound[2])]);
+                    else
+                        x:=x+1;
+                    fi;
                 od;
                 2cell:=[x]; # the 2-cell begins with just x in its boundary
-                sORt:=Random([2,3]);
+                if rand
+                    then
+                    sORt:=Random([2,3]);
+                else
+                    sORt:=sourceORtarget[x][Length(sourceORtarget[x])];
+                    Unbind(sourceORtarget[x][Length(sourceORtarget[x])]);
+                fi;
                 ori:=path[bound[2][x][sORt]]; # the orientation of the target of x
                 e0:=bound[2][x][sORt];
                 e1:=ClockwiseTurn(ori,x); # next edge to travel along
