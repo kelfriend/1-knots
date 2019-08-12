@@ -15,6 +15,7 @@ KnotComplement:=function(arg...)
     if Length(arg)>1
         then
         rand:=true;
+        Print("Random 2-cell selection is enabled.\n");
     else
         rand:=false;
     fi;
