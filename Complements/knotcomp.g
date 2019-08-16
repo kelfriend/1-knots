@@ -1,12 +1,12 @@
-#########################################################################################
-######################## Regular CW-complex of knot complements #########################
-#########################################################################################
-################# Input: a list of (signed) integer pairs corresponding #################
-######################## to the lengths of horizontal segments of a knot/link. ##########
-#########################################################################################
-################ Output: a regular CW-complex representing the complement of ############
-######################## the input knot/link. ###########################################
-##################################################################################### k.k
+################################################################################
+################### Regular CW-complex of knot complements #####################
+################################################################################
+############ Input: a list of integer pairs corresponding ######################
+################### to the lengths of horizontal segments of a knot/link. ######
+################################################################################
+########### Output: a regular CW-complex representing the complement of ########
+################### the input knot/link. #######################################
+################################################################################
 KnotComplement:=function(arg...)
     local
         rand, D, len, signless, PuncturedDisk,
@@ -172,12 +172,32 @@ KnotComplement:=function(arg...)
                 do
                 if CornerConfiguration(i,j) in [1,4]
                     then
-                    Add(bound[2],[2,bigGrid[(2*i)-1][(2*j)-1],bigGrid[2*i][2*j]]);
-                    Add(bound[2],[2,bigGrid[(2*i)-1][(2*j)-1],bigGrid[2*i][2*j]]);
+                    Add(bound[2],[
+                        2,
+                        bigGrid[(2*i)-1][(2*j)-1],
+                        bigGrid[2*i][2*j]
+                        ]
+                    );
+                    Add(bound[2],[
+                        2,
+                        bigGrid[(2*i)-1][(2*j)-1],
+                        bigGrid[2*i][2*j]
+                        ]
+                    );
                 elif CornerConfiguration(i,j) in [2,3]
                     then
-                    Add(bound[2],[2,bigGrid[(2*i)-1][2*j],bigGrid[2*i][(2*j)-1]]);
-                    Add(bound[2],[2,bigGrid[(2*i)-1][2*j],bigGrid[2*i][(2*j)-1]]);
+                    Add(bound[2],[
+                        2,
+                        bigGrid[(2*i)-1][2*j],
+                        bigGrid[2*i][(2*j)-1]
+                        ]
+                    );
+                    Add(bound[2],[
+                        2,
+                        bigGrid[(2*i)-1][2*j],
+                        bigGrid[2*i][(2*j)-1]
+                        ]
+                    );
                 fi;
             od;
         od;
@@ -188,13 +208,13 @@ KnotComplement:=function(arg...)
             Add(bound[1],[1,0]);
         od;
 
-        Add(bound[2],[2,1,2]); # connect the central component to the circumference
-        Add(bound[2],[2,Length(bound[1])-1,Length(bound[1])]); # of the disk
-        Add(bound[2],[2,1,Length(bound[1])]);
+        Add(bound[2],[2,1,2]); # connect the central component to the
+        Add(bound[2],[2,Length(bound[1])-1,Length(bound[1])]); # circumference
+        Add(bound[2],[2,1,Length(bound[1])]); # of the disk
         Add(bound[2],[2,1,Length(bound[1])]);
 
         bigGrid:=FrameArray(bigGrid);
-        bigGrid[1][2]:=1; # Adds the first and last 0-cells to bigGrid to be used below
+        bigGrid[1][2]:=1; # Adds the first and last 0-cells to bigGrid
         bigGrid[Length(bigGrid)][Length(bigGrid[1])-1]:=0c+1;
 
         Orient:=function(bound)
@@ -218,7 +238,7 @@ KnotComplement:=function(arg...)
             od;
 
             Clockwise:=function(neighbours)
-                local # orders the neighbours of each 0-cell in a clockwise manner
+                local # orders clockwise the neighbours of each 0-cell
                     oriented, first0, last0,
                     i, j, x, k, l, posi, posx;
 
@@ -229,13 +249,14 @@ KnotComplement:=function(arg...)
                 oriented[1][7]:=first0[1];
                 oriented[1][6]:=first0[3];
                 oriented[1][8]:=first0[2];
-# these two orderings are always fixed; they correspond to the circumferential edges
+            # these two orderings are always fixed;
+            # they correspond to the circumferential edges
                 oriented[Length(oriented)][1]:=last0[1]; 
                 oriented[Length(oriented)][2]:=last0[3];
                 oriented[Length(oriented)][12]:=last0[2];
 
-                for i in [2..Length(neighbours)-1] # excludes the 1st and last 0-cells
-                    do
+                for i in [2..Length(neighbours)-1]
+                    do # excludes the 1st and last 0-cells
                     for j in [1..Length(neighbours[i])]
                         do # x is a neighbouring 0-cell to i
                         x:=bound[2][neighbours[i][j]];
@@ -267,7 +288,7 @@ KnotComplement:=function(arg...)
                             elif posi[2]<posx[2]
                                 then
                                 if oriented[i][2]="pass"
-                                    then # ***always assigns the uppermost loop first***
+                                    then # *always assigns the upper loop first*
                                     oriented[i][2]:=neighbours[i][j];
                                 else
                                     oriented[i][3]:=neighbours[i][j];
@@ -322,7 +343,8 @@ KnotComplement:=function(arg...)
             return Clockwise(neighbours);
         end;
 
-        path:=Orient(bound); # this is an ordered list of the neighbours of each 1-cell
+        path:=Orient(bound);
+        # this is an ordered list of the neighbours of each 1-cell
 
         FaceTrace:=function(path)
             local
@@ -332,8 +354,9 @@ KnotComplement:=function(arg...)
 
             unselectedEdges:=List([1..Length(bound[2])-2]);
             unselectedEdges:=Concatenation(unselectedEdges,unselectedEdges);
-            Add(unselectedEdges,Length(bound[2])-1); # list of two of each edge except
-            Add(unselectedEdges,Length(bound[2])); # for the circumferential edges
+            Add(unselectedEdges,Length(bound[2])-1);
+            Add(unselectedEdges,Length(bound[2]));
+# list of two of each edge except for the circumferential edges
 
             ClockwiseTurn:=function(p,e)
 # inputs the orientation list of a node and the number of an edge in that list,
@@ -359,8 +382,8 @@ KnotComplement:=function(arg...)
                     x:=Random([1..Length(bound[2])]); # select a random edge
                 fi;
                 while (not x in unselectedEdges) and (not e1 in unselectedEdges)
-                    do # reselect edge if it already has two 2-cells in its coboundary
-                    if rand
+                    do # reselect edge if it already has two
+                    if rand # 2-cells in its coboundary
                         then
                         x:=Random([1..Length(bound[2])]);
                     else
@@ -375,20 +398,21 @@ KnotComplement:=function(arg...)
                     sORt:=sourceORtarget[x][Length(sourceORtarget[x])];
                     Unbind(sourceORtarget[x][Length(sourceORtarget[x])]);
                 fi;
-                ori:=path[bound[2][x][sORt]]; # the orientation of the target of x
+                ori:=path[bound[2][x][sORt]]; # the orientation of x's target
                 e0:=bound[2][x][sORt];
                 e1:=ClockwiseTurn(ori,x); # next edge to travel along
                 while e1<>x
                     do
                     Add(2cell,e1);
-                    e0:=Filtered(bound[2][e1]{[2,3]},y->y<>e0)[1]; # target vertex of e1
+                    e0:=Filtered(bound[2][e1]{[2,3]},y->y<>e0)[1]; # e1's target
                     ori:=path[e0];
                     e1:=ClockwiseTurn(ori,e1);
                 od;
                 Add(2cell,Length(2cell),1);
                 if (not Set(2cell) in List(bound[3],x->Set(x)))
                     then
-                    for i in Filtered(2cell{[2..Length(2cell)]},y->y in unselectedEdges)
+                    for i in Filtered(2cell{[2..Length(2cell)]},
+                    y->y in unselectedEdges)
                         do
                         Unbind(unselectedEdges[Position(unselectedEdges,i)]);
                     od;
@@ -489,7 +513,8 @@ KnotComplement:=function(arg...)
 
             loops:=Filtered(
                 [1..l1-4],
-                x->Length(Positions(bound[2],bound[2][x]))>1 and bound[2][x][2]<>1
+                x->Length(Positions(bound[2],bound[2][x]))>1 and
+                bound[2][x][2]<>1
             );
 
             horizontals:=Filtered(
@@ -507,7 +532,7 @@ KnotComplement:=function(arg...)
                 do
                 lst:=[0,0];
                 if 1 in grid[i]
-                    then # check for corner configuration, this is important in deciding
+                    then # check for corner configuration, important in deciding
                     lst[1]:=2; # which loop to use in the 2-cell (top/bottom)
                 fi;
                 if 2 in grid[i]
@@ -526,11 +551,13 @@ KnotComplement:=function(arg...)
                 htube:=loops{lst+4*(i-1)};
                 h1:=Filtered(
                     horizontals,
-                    x->bound[2][x][2] in [bound[2][htube[1]][2]..bound[2][htube[2]][2]]
+                    x->bound[2][x][2] in
+                    [bound[2][htube[1]][2]..bound[2][htube[2]][2]]
                 );
                 h2:=Filtered(
                     horizontals,
-                    x->bound[2][x][2] in [bound[2][htube[1]][3]..bound[2][htube[2]][3]]
+                    x->bound[2][x][2] in
+                    [bound[2][htube[1]][3]..bound[2][htube[2]][3]]
                 );
                 htube:=Concatenation(htube,h1,h2);
                 Add(htube,Length(htube),1);
@@ -568,7 +595,10 @@ KnotComplement:=function(arg...)
 
             for i in loopless
                 do
-                Add(i,Filtered(loops,y->bound[2][i[1]][2] in bound[2][y]{[2,3]})[1]);
+                Add(i,Filtered(
+                    loops,
+                    y->bound[2][i[1]][2] in bound[2][y]{[2,3]})[1]
+                );
                 Add(i,Filtered(
                     loops,
                     y->bound[2][i[Length(i)-1]][3] in bound[2][y]{[2,3]})[2]
