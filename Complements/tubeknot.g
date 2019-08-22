@@ -1,11 +1,12 @@
 # Input: List of signed integer pairs.
 # Output: A 2-dimensional regular CW-complex.
 
-TubeKnot:=function(l);
+TubeKnot:=function(l)
     local
         len, signless, bound,
         IsIntersection, grid, i,
-        j, 0c, no0s, no0, o, j, k;
+        j, 0c, no0s, no0, o, b, 1c,
+        l1, l2, l3, l4;
 
     len:=Length(l);
     signless:=List(l,x->[AbsInt(x[1]),AbsInt(x[2])]);
@@ -79,39 +80,78 @@ TubeKnot:=function(l);
                 Add(no0,o);
             fi;
         od;
+        b:=-4;
+        1c:=Length(bound[2])+1;
         for j in [1..Length(no0)-1] do
-            for k in [1,2] do
+            b:=b+4;
+
+            if j=1 then
                 Add(bound[2],[2,no0[j][1],no0[j][2]]);
-                Add(bound[2],[2,no0[j][k],no0[j+1][k]]);
-                Add(bound[2],[2,no0[j+1][1],no0[j+1][2]]);
-            od;
+                Add(bound[2],[2,no0[j][1],no0[j][2]]);
+            fi;
+
+            Add(bound[2],[2,no0[j][1],no0[j+1][1]]);
+            Add(bound[2],[2,no0[j][2],no0[j+1][2]]);
+
+            Add(bound[2],[2,no0[j+1][1],no0[j+1][2]]);
+            Add(bound[2],[2,no0[j+1][1],no0[j+1][2]]);
+            # here is where the 2-cells for the horizontal tube are formed
+            Add(bound[3],[4,1c,1c+2,1c+4,1c+3]+[0,b,b,b,b]);
+            Add(bound[3],[4,1c+1,1c+2,1c+5,1c+3]+[0,b,b,b,b]);
         od;
     od;
 
     for i in [1..len] do
         no0:=Filtered(List([1..len],x->grid[x][i]),x->x<>0);
         for j in [1..Length(no0)-1] do
-            if Size(no0[j][1])=2 then
-                if Size(no0[j+1][1])=2 then
-                    for k in [1,2] do
-                        Add(bound[2],[2,no0[j][k][1],no0[j+1][k][1]]);
-                        Add(bound[2],[2,no0[j][k][2],no0[j+1][k][2]]);
-                    od;
+            if not IsList(no0[j][1]) then
+                1c:=Length(bound[2]);
+                l1:=Position(bound[2],[2,no0[j][1],no0[j][2]]);
+                if not IsList(no0[j+1][1]) then
+                    l2:=Position(bound[2],[2,no0[j+1][1],no0[j+1][2]]);
+
+                    Add(bound[2],[2,no0[j][1],no0[j+1][1]]); # connect
+                    Add(bound[2],[2,no0[j][2],no0[j+1][2]]); # vertically
+
+                    Add(bound[3],[4,1c+1,1c+2,l1+1,l2+1]); # add the 2-cells
+                    Add(bound[3],[4,1c+1,1c+2,l1,l2]);
                 else
-                    for k in [1,2] do
-                        Add(bound[2],[2,no0[j][1][k],no0[j+1][k]]);
-                        Add(bound[2],[2,no0[j][2][k],no0[j+1][k]]);
-                    od;
+                    l2:=Position(bound[2],[2,no0[j+1][1][1],no0[j+1][1][2]]);
+                    l3:=Position(bound[2],[2,no0[j+1][2][1],no0[j+1][2][2]]);
+
+                    Add(bound[2],[2,no0[j][1],no0[j+1][1][1]]);
+                    Add(bound[2],[2,no0[j][2],no0[j+1][1][2]]);
+
+                    Add(bound[3],[4,1c+1,1c+2,l1+1,l2]);
+                    Add(bound[3],[6,1c+1,1c+2,l1,l3,l2+2,l2+3]);
+                    Add(bound[3],[2,l2,l2+1]); # patches up the holes
+                    Add(bound[3],[2,l3,l3+1]); # in the vertical tubes
                 fi;
             else
-                if Size(no0[j+1][1])=2 then
-                    for k in [1,2] do
-                        Add(bound[2],[2,no0[j][1],no0[j+1][k][1]]);
-                        Add(bound[2],[2,no0[j][2],no0[j+1][k][2]]);
-                    od;
+                1c:=Length(bound[2]);
+                l1:=Position(bound[2],[2,no0[j][1][1],no0[j][1][2]]);
+                l2:=Position(bound[2],[2,no0[j][2][1],no0[j][2][2]]);
+                if not IsList(no0[j+1][1])=1 then
+                    l3:=Position(bound[2],[2,no0[j+1][1],no0[j+1][2]]);
+
+                    Add(bound[2],[2,no0[j][1][1],no0[j+1][1]]);
+                    Add(bound[2],[2,no0[j][1][2],no0[j+1][2]]);
+
+                    Add(bound[3],[4,1c+1,1c+2,l1+1,l3+1]);
+                    Add(bound[3],[6,1c+1,1c+2,l2+1,l3,l1+2,l1+3]);
+                    Add(bound[3],[2,l1,l1+1]);
+                    Add(bound[3],[2,l2,l2+1]);
                 else
-                    Add(bound[2],[2,no0[j][1],no0[j+1][1]]);
-                    Add(bound[2],[2,no0[j][2],no0[j+1][2]]);
+                    l3:=Position(bound[2],[2,no0[j+1][1][1],no0[j+1][1][2]]);
+                    l4:=Position(bound[2],[2,no0[j+1][2][1],no0[j+1][2][2]]);
+
+                    Add(bound[2],[2,no0[j][1][1],no0[j+1][1][1]]);
+                    Add(bound[2],[2,no0[j][1][2],no0[j+1][1][2]]);
+
+                    Add(bound[3],[4,1c+1,1c+2,l1+1,l3]);
+                    Add(bound[3],[8,1c+1,1c+2,l2+1,l1+2,l1+3,l3+2,l3+3,l4]);
+                    Add(bound[3],[2,l3,l3+1]);
+                    Add(bound[3],[2,l4,l4+1]);
                 fi;
             fi;
         od;
