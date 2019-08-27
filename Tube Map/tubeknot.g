@@ -73,7 +73,7 @@ TubeKnot:=function(l)
         no0s:=Filtered(grid[i],x->x<>0);
         no0:=[];
         for o in no0s do
-            if Size(o[1])=2 then
+            if not IsInt(o[1]) then
                 Add(no0,o[1]);
                 Add(no0,o[2]);
             else
@@ -116,14 +116,17 @@ TubeKnot:=function(l)
                     Add(bound[3],[4,1c+1,1c+2,l1+1,l2+1]); # add the 2-cells
                     Add(bound[3],[4,1c+1,1c+2,l1,l2]);
                 else
+                    Add(bound[2],[2,no0[j+1][1][1],no0[j+1][2][1]]);
+                    Add(bound[2],[2,no0[j+1][1][2],no0[j+1][2][2]]);
+
                     l2:=Position(bound[2],[2,no0[j+1][1][1],no0[j+1][1][2]]);
                     l3:=Position(bound[2],[2,no0[j+1][2][1],no0[j+1][2][2]]);
 
                     Add(bound[2],[2,no0[j][1],no0[j+1][1][1]]);
                     Add(bound[2],[2,no0[j][2],no0[j+1][1][2]]);
 
-                    Add(bound[3],[4,1c+1,1c+2,l1+1,l2]);
-                    Add(bound[3],[6,1c+1,1c+2,l1,l3,l2+2,l2+3]);
+                    Add(bound[3],[4,1c+3,1c+4,l1+1,l2]);
+                    Add(bound[3],[6,1c+3,1c+4,l1,1c+1,1c+2,l3]);
                     Add(bound[3],[2,l2,l2+1]); # patches up the holes
                     Add(bound[3],[2,l3,l3+1]); # in the vertical tubes
                 fi;
@@ -131,25 +134,28 @@ TubeKnot:=function(l)
                 1c:=Length(bound[2]);
                 l1:=Position(bound[2],[2,no0[j][1][1],no0[j][1][2]]);
                 l2:=Position(bound[2],[2,no0[j][2][1],no0[j][2][2]]);
-                if not IsList(no0[j+1][1])=1 then
+                if not IsList(no0[j+1][1]) then
                     l3:=Position(bound[2],[2,no0[j+1][1],no0[j+1][2]]);
 
                     Add(bound[2],[2,no0[j][1][1],no0[j+1][1]]);
                     Add(bound[2],[2,no0[j][1][2],no0[j+1][2]]);
 
                     Add(bound[3],[4,1c+1,1c+2,l1+1,l3+1]);
-                    Add(bound[3],[6,1c+1,1c+2,l2+1,l3,l1+2,l1+3]);
+                    Add(bound[3],[6,1c+1,1c+2,l2+1,l3,1c-3,1c-2]);
                     Add(bound[3],[2,l1,l1+1]);
                     Add(bound[3],[2,l2,l2+1]);
                 else
+                    Add(bound[2],[2,no0[j+1][1][1],no0[j+1][2][1]]);
+                    Add(bound[2],[2,no0[j+1][1][2],no0[j+1][2][2]]);
+
                     l3:=Position(bound[2],[2,no0[j+1][1][1],no0[j+1][1][2]]);
                     l4:=Position(bound[2],[2,no0[j+1][2][1],no0[j+1][2][2]]);
 
                     Add(bound[2],[2,no0[j][1][1],no0[j+1][1][1]]);
                     Add(bound[2],[2,no0[j][1][2],no0[j+1][1][2]]);
 
-                    Add(bound[3],[4,1c+1,1c+2,l1+1,l3]);
-                    Add(bound[3],[8,1c+1,1c+2,l2+1,l1+2,l1+3,l3+2,l3+3,l4]);
+                    Add(bound[3],[4,1c+3,1c+4,l1+1,l3]);
+                    Add(bound[3],[8,1c+1,1c+2,1c-2,1c-3,1c+3,1c+4,l2+1,l4]);
                     Add(bound[3],[2,l3,l3+1]);
                     Add(bound[3],[2,l4,l4+1]);
                 fi;
@@ -157,6 +163,6 @@ TubeKnot:=function(l)
         od;
     od;
 
-    return bound;
+    return grid;
 end;
 K:=[[2,5],[1,3],[2,4],[3,5],[1,4]];;
