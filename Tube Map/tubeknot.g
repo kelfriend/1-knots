@@ -142,8 +142,6 @@ TubeKnot:=function(l)
 
                     Add(bound[3],[4,1c+1,1c+2,l1+1,l3+1]);
                     Add(bound[3],[6,1c+1,1c+2,l2+1,l3,1c-3,1c-2]);
-                    Add(bound[3],[2,l1,l1+1]);
-                    Add(bound[3],[2,l2,l2+1]);
                 else
                     Add(bound[2],[2,no0[j+1][1][1],no0[j+1][2][1]]);
                     Add(bound[2],[2,no0[j+1][1][2],no0[j+1][2][2]]);
@@ -163,6 +161,6 @@ TubeKnot:=function(l)
         od;
     od;
 
-    return grid;
+    return RegularCWComplex(bound);
 end;
 K:=[[2,5],[1,3],[2,4],[3,5],[1,4]];;
