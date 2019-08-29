@@ -6,7 +6,7 @@ TubeKnot:=function(l)
         len, signless, bound,
         IsIntersection, grid, i,
         j, 0c, no0s, no0, o, b, 1c,
-        l1, l2, l3, l4;
+        l1, l2, l3, l4, filter, 3c;
 
     len:=Length(l);
     signless:=List(l,x->[AbsInt(x[1]),AbsInt(x[2])]);
@@ -161,6 +161,25 @@ TubeKnot:=function(l)
         od;
     od;
 
+    #filter:=[];
+    #3c:=[];
+    #for i in Filtered(bound[3],x->x[1]=2) do
+    #    Add(filter,i[2]);
+    #    Add(filter,i[3]);
+    #od;
+
+    #for i in [1..Length(bound[3])] do
+    #    if not Length(Intersection(
+    #            bound[3][i]{[2..Length(bound[3][i])]},
+    #            filter))=2 then
+    #        Add(3c,i);
+    #    fi;
+    #od;
+
+    #Add(3c,Length(3c),1);
+    #Add(bound[4],3c);
+    #Add(bound,[]);
+
     return RegularCWComplex(bound);
 end;
-K:=[[2,5],[1,3],[2,4],[3,5],[1,4]];;
+K:=[[2,4],[1,3],[2,4],[1,3]];;
