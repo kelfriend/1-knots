@@ -1,7 +1,7 @@
 # Input: List of signed integer pairs.
 # Output: A 2-dimensional regular CW-complex.
 
-TubeKnot:=function(l)
+TubularKnot:=function(l)
     local
         len, signless, bound,
         IsIntersection, grid, i,
