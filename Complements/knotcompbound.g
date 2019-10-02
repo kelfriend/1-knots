@@ -5,7 +5,8 @@ KnotComplementWithBoundary:=function(arc)
 
     RegularCWKnot:=function(arc)
         local
-            D, len, signless, HollowTubes, max, TubeJoiner;
+            D, len, signless, HollowTubes, max,
+            bigGrid, correction, TubeJoiner;
 
         D:=arc;
         len:=Length(D);
@@ -15,7 +16,7 @@ KnotComplementWithBoundary:=function(arc)
             local
                 grid, i, IsIntersection,
                 CornerConfiguration, bound,
-                bigGrid, GridFill, j, tick,
+                bigGrid, GridFill, j, tick, correction,
                 hslice1, hslice2, l1, l2, l3,
                 max, vslice1, vslice2;
 
@@ -121,6 +122,27 @@ KnotComplementWithBoundary:=function(arc)
                 od;
             od;
 
+    # UPDATE: needed to account for configuration of corners at the end-step
+    # (i.e. when matching the loops of one layer to the other).
+    # There are sometimes disparities in the ordering on 1-cells from
+    # left-to-right vs. when ordering from top-to-bottom. Not realising this was
+    # causing 111 of the pre-stored knots in HAP to yield incorrect
+    # CW-decomposition.
+            correction:=[];
+            for i in [1..len] do
+                for j in [1..len] do
+                    if CornerConfiguration(j,i)<>0 then
+                        if CornerConfiguration(j,i) in [1,4] then
+                            Add(correction,1);
+                            Add(correction,-1);
+                        else
+                            Add(correction,0);
+                            Add(correction,0);
+                        fi;
+                    fi;
+                od;
+            od;
+
             ### add the 0, 1 & 2-cells ###
             ########## to bound ##########
             for i in [1..2*Maximum(bigGrid[Length(bigGrid)])] do
@@ -175,7 +197,10 @@ KnotComplementWithBoundary:=function(arc)
                 od;
                 l3:=Concatenation(
                     [l2+1],
-                    [l2+3..Length(bound[2])-2],
+                    Filtered(
+                        [l2+3..Length(bound[2])-2],
+                        x->AbsInt(bound[2][x][2]-bound[2][x][3])=1
+                    ),
                     [Length(bound[2])]
                 );
                 Add(l3,Length(l3),1);
@@ -263,7 +288,10 @@ KnotComplementWithBoundary:=function(arc)
                 od;
                 l3:=Concatenation(
                     [l2+1],
-                    [l2+3..Length(bound[2])-2],
+                    Filtered(
+                        [l2+3..Length(bound[2])-2],
+                        x->AbsInt(bound[2][x][2]-bound[2][x][3])<>1
+                    ),
                     [Length(bound[2])]
                 );
                 Add(l3,Length(l3),1);
@@ -271,11 +299,13 @@ KnotComplementWithBoundary:=function(arc)
             od;
             ##############################
 
-            return [max,bound];
+            return [max,bound,bigGrid,correction];
         end;
 
         D:=HollowTubes(D);
         max:=D[1];
+        bigGrid:=D[3];
+        correction:=D[4];
         D:=D[2];
 
         TubeJoiner:=function(D)
@@ -292,6 +322,7 @@ KnotComplementWithBoundary:=function(arc)
                     vloops[i]:=vloops[i]+1;
                 fi;
             od;
+            vloops:=vloops+correction;
 
             for i in [1..size/2] do
                 Add(D[2],[2,D[2][hloops[2*i]][2],D[2][vloops[2*i]][2]]);
@@ -306,8 +337,11 @@ KnotComplementWithBoundary:=function(arc)
         end;
 
         D:=TubeJoiner(D);
+        D:=RegularCWComplex(D);
+        D!.grid:=bigGrid;
+        D!.arcPresentation:=arc;
 
-        return RegularCWComplex(D);
+        return D;
     end;
 
     knot:=RegularCWKnot(arc);
