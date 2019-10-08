@@ -290,7 +290,11 @@ KnotComplementWithBoundary:=function(arc)
                     [l2+1],
                     Filtered(
                         [l2+3..Length(bound[2])-2],
-                        x->AbsInt(bound[2][x][2]-bound[2][x][3])<>1
+                        x-> not
+                        (bound[2][x][2] in vslice1 and bound[2][x][3] in vslice2)
+                        and
+                        not
+                        (bound[2][x][2] in vslice2 and bound[2][x][3] in vslice1)
                     ),
                     [Length(bound[2])]
                 );
