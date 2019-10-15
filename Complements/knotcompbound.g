@@ -425,17 +425,28 @@ KnotComplementWithBoundary:=function(arc)
                 return k+1+2*Int((k-1)/len);
             elif n=1 then
                 ind:=1;
-                if k>threshold and 1c1[k-1]=1c1[k] then
-                    ind:=2;
-                elif k in [2..threshold] and 1c1[k-1]=1c1[k] then
-                    ind:=HorizontalIndex(n);
-                    if ind=0 then ind:=1; fi;
+                if k in [1..threshold] then
+                    if k>1 and 1c1[k-1]=1c1[k] then
+                        ind:=HorizontalIndex(k);
+                        if ind=0 then ind:=2; fi;
+                    elif 1c1[k]=1c1[k+1] then
+                        ind:=HorizontalIndex(k);
+                        if ind=0 then ind:=1; fi;
+                    fi;
+                elif k>threshold then
+                    if 1c1[k-1]=1c1[k] then
+                        ind:=2;
+                    elif k<Length(1c1) and 1c1[k]=1c1[k+1] then
+                        ind:=1;
+                    fi;
                 fi;
                 return Positions(1c2,1c1[k])[ind];
-            else
-                2cell:=List(bound1[3][k]{[2..5]},x->inc(1,x));
-                2cell:=Concatenation([4],Set(2cell));
+            elif n=2 then
+                2cell:=List(bound1[3][k]{[2..Length(bound1[3][k])]},x->inc(1,x));
+                2cell:=Concatenation([Length(2cell)],Set(2cell));
                 return Position(2c2,2cell);
+            else
+                return fail;
             fi;
         end;
 
