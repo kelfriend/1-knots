@@ -1,12 +1,14 @@
 Read("~/proj/Knots/knotcomp.g");
 KnotComplementWithBoundary:=function(arc)
     local
-        RegularCWKnot, knot, comp, inclusion, iota;
+        comp, RegularCWKnot, knot, hcorrection, threshold, inclusion, iota;
+
+    comp:=KnotComplement(arc);
 
     RegularCWKnot:=function(arc)
         local
             D, len, signless, HollowTubes, max,
-            bigGrid, correction, TubeJoiner;
+            bigGrid, correction, threshold, hcorrection, TubeJoiner;
 
         D:=arc;
         len:=Length(D);
@@ -16,9 +18,9 @@ KnotComplementWithBoundary:=function(arc)
             local
                 grid, i, IsIntersection,
                 CornerConfiguration, bound,
-                bigGrid, GridFill, j, tick, correction,
+                bigGrid, GridFill, j, tick, correction, hcorrection,
                 hslice1, hslice2, l1, l2, l3,
-                max, vslice1, vslice2;
+                max, vslice1, vslice2, threshold;
 
             grid:=List([1..len],x->List([1..len],y->0));
             for i in [1..len]
@@ -129,6 +131,7 @@ KnotComplementWithBoundary:=function(arc)
     # causing 111 of the pre-stored knots in HAP to yield incorrect
     # CW-decomposition.
             correction:=[];
+            hcorrection:=[];
             for i in [1..len] do
                 for j in [1..len] do
                     if CornerConfiguration(j,i)<>0 then
@@ -139,6 +142,13 @@ KnotComplementWithBoundary:=function(arc)
                             Add(correction,0);
                             Add(correction,0);
                         fi;
+                        if CornerConfiguration(i,j) in [1,4] then
+                            Add(hcorrection,2);
+                            Add(hcorrection,1);
+                        else
+                            Add(hcorrection,0);
+                            Add(hcorrection,0);
+                        fi; 
                     fi;
                 od;
             od;
@@ -301,15 +311,19 @@ KnotComplementWithBoundary:=function(arc)
                 Add(l3,Length(l3),1);
                 Add(bound[3],l3);
             od;
+
+            threshold:=Length(bound[2])/2;
             ##############################
 
-            return [max,bound,bigGrid,correction];
+            return [max,bound,bigGrid,correction,threshold,hcorrection];
         end;
 
         D:=HollowTubes(D);
         max:=D[1];
         bigGrid:=D[3];
         correction:=D[4];
+        threshold:=D[5];
+        hcorrection:=D[6];
         D:=D[2];
 
         TubeJoiner:=function(D)
@@ -345,16 +359,18 @@ KnotComplementWithBoundary:=function(arc)
         D!.grid:=bigGrid;
         D!.arcPresentation:=arc;
 
-        return D;
+        return [D,hcorrection,threshold];
     end;
 
     knot:=RegularCWKnot(arc);
-    comp:=KnotComplement(arc);
+    hcorrection:=knot[2];
+    threshold:=knot[3];
+    knot:=knot[1];
 
     inclusion:=function(bound)
         local
             bound1, bound2, len,
-            1c1, 1c2, 2c2, inc;
+            1c1, 1c2, 2c2, HorizontalIndex, inc;
 
         bound1:=bound[1];
         bound2:=bound[2];
@@ -384,6 +400,23 @@ KnotComplementWithBoundary:=function(arc)
 
         2c2:=List(bound2[3],x->Concatenation([x[1]],Set(x{[2..Length(x)]})));
 
+        HorizontalIndex:=function(n)
+
+            return hcorrection[
+                Position(
+                    Filtered(
+                        [1..threshold],
+                        x->Length(
+                            Positions(
+                                bound1[2],
+                                bound1[2][x]
+                            )
+                        )=2
+                    ),n
+                )
+            ];
+        end;
+
         inc:=function(n,k)
             local
                 ind, 2cell;
@@ -392,12 +425,15 @@ KnotComplementWithBoundary:=function(arc)
                 return k+1+2*Int((k-1)/len);
             elif n=1 then
                 ind:=1;
-                if k>1 and 1c1[k-1]=1c1[k] then
+                if k>threshold and 1c1[k-1]=1c1[k] then
                     ind:=2;
+                elif k in [2..threshold] and 1c1[k-1]=1c1[k] then
+                    ind:=HorizontalIndex(n);
+                    if ind=0 then ind:=1; fi;
                 fi;
                 return Positions(1c2,1c1[k])[ind];
             else
-                2cell:=List(bound1[3][k]{[2..4]},x->inc(1,x));
+                2cell:=List(bound1[3][k]{[2..5]},x->inc(1,x));
                 2cell:=Concatenation([4],Set(2cell));
                 return Position(2c2,2cell);
             fi;
