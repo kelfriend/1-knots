@@ -10,7 +10,7 @@
 KnotComplement:=function(arg...)
     local
         rand, D, len, signless, PuncturedDisk,
-        P, grid, PuncturedTube;
+        P, grid, loop_correction, PuncturedTube, i;
 
     if Length(arg)>1
         then
@@ -30,7 +30,7 @@ KnotComplement:=function(arg...)
             CornerConfiguration, bound,
             bigGrid, GridFill, j, tick,
             hslice, vslice, k, 0c, Orient,
-            path, FaceTrace, cgrid;
+            path, FaceTrace, traced_bound, cgrid;
 
         grid:=List([1..len],x->List([1..len],y->0));
         for i in [1..len]
@@ -348,9 +348,9 @@ KnotComplement:=function(arg...)
 
         FaceTrace:=function(path)
             local
-                unselectedEdges, sourceORtarget,
-                x, ClockwiseTurn, 2cell,
-                sORt, ori, e1, e0, i;
+                unselectedEdges, sourceORtarget, faceloops,
+                x, ClockwiseTurn, IsLoop, loop_correction, edge,
+                2nd_loop, 2cell, sORt, ori, e1, e0, i;
 
             unselectedEdges:=List([1..Length(bound[2])-2]);
             unselectedEdges:=Concatenation(unselectedEdges,unselectedEdges);
@@ -373,6 +373,20 @@ KnotComplement:=function(arg...)
                 return p[f];
             end;
 
+            ############ ADDED 15/10/19 ############
+            IsLoop:=function(n)
+
+                if Length(Positions(bound[2],bound[2][n]))=2 then
+                    return true;
+                else
+                    return false;
+                fi;
+
+            end;
+
+            loop_correction:=List(bound[2],x->0);
+            ########################################
+
             sourceORtarget:=List([1..Length(bound[2])],y->[3,2]);
             x:=1;
             while unselectedEdges<>[]
@@ -390,6 +404,7 @@ KnotComplement:=function(arg...)
                         x:=x+1;
                     fi;
                 od;
+
                 2cell:=[x]; # the 2-cell begins with just x in its boundary
                 if rand
                     then
@@ -418,10 +433,35 @@ KnotComplement:=function(arg...)
                     od;
                     Add(bound[3],2cell);
                 fi;
+
+                ############ ADDED 15/10/19 ############
+                # orders any loops that are present in the 2cell by the order
+                # in which they were selected (doesn't include redundant 2cells
+                # which are filtered out after the main while loop)
+                if 2cell[1]<>2 then
+                    faceloops:=Filtered(2cell{[2..Length(2cell)]},IsLoop);
+                    if faceloops<>[] then
+                        for edge in faceloops do
+                            if loop_correction[edge]=0 then
+                                loop_correction[edge]:=1;
+                                2nd_loop:=Filtered(
+                                    Positions(
+                                        bound[2],
+                                        bound[2][edge]
+                                    ),
+                                    y->y<>edge
+                                )[1];
+                                loop_correction[2nd_loop]:=2;
+                            fi;
+                        od;
+                    fi;
+                fi;
+                ########################################
+                        
             od;
 
             bound[3]:=Filtered(bound[3],y->y[1]<>2);
-            return bound;
+            return [bound,loop_correction];
         end;
 
         cgrid:=grid*0; # this is needed at the very end when
@@ -433,11 +473,14 @@ KnotComplement:=function(arg...)
             od;
         od;
 
-        return [FaceTrace(path),cgrid];
+        traced_bound:=FaceTrace(path);
+
+        return [traced_bound[1],cgrid,traced_bound[2]];
     end;
 
     P:=PuncturedDisk(D);
     grid:=P[2];
+    loop_correction:=P[3];
     P:=P[1];
 
     PuncturedTube:=function(bound)
@@ -470,6 +513,7 @@ KnotComplement:=function(arg...)
         end;
 
         bound:=DuplicateDisk(bound);
+        loop_correction:=Concatenation(loop_correction,loop_correction);
 
         JoinDisks:=function(bound)
 # patch together the two disks via 1-cells, 2-cells & 3-cells
@@ -684,6 +728,13 @@ KnotComplement:=function(arg...)
     end;
 
     P:=PuncturedTube(P);
+    P:=RegularCWComplex(P);
 
-    return RegularCWComplex(P);
+    for i in [1..Length(P!.boundaries[2])-Length(loop_correction)] do
+        Add(loop_correction,0);
+    od;
+
+    P!.loopCorrection:=loop_correction;
+
+    return P;
 end;
