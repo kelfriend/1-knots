@@ -1,6 +1,15 @@
-ChainMapOfKnotBoundaryToComplement:=function(iota)
+ChainMapOfKnotBoundaryToComplement:=function(arg...)
     local 
-        mapping, inclusion_preimage, C_star, Bound, D_star;
+        iota, index, mapping,
+        inclusion_preimage, C_star,
+        Bound, D_star, H, D_star_tensor,
+        C_star_tensor;
+
+    iota:=arg[1];
+
+    if Length(arg)>1 then
+        index:=arg[2];
+    fi;
 
     mapping:=[[],[],[]];
     mapping[1]:=List([1..iota!.source!.nrCells(0)],x->iota!.mapping(0,x));
@@ -11,6 +20,7 @@ ChainMapOfKnotBoundaryToComplement:=function(iota)
     
     C_star:=ChainComplexOfUniversalCover(iota!.target,false); # disable the
     # discrete vector field for now
+    # Check universalcover.gi and disable the contraction !!! (done, line 224)
 
     Bound:={n,k}->List(
         C_star!.boundary(n,iota!.mapping(n,k)),
@@ -32,5 +42,10 @@ ChainMapOfKnotBoundaryToComplement:=function(iota)
         )
     );
 
-    return [D_star,C_star,inclusion_preimage];
+    H:=LowIndexSubgroupsFpGroup(D_star!.group,index)[index];
+    D_star_tensor:=TensorWithIntegersOverSubgroup(D_star,H);
+    C_star_tensor:=TensorWithIntegersOverSubgroup(C_star,H);
+
+    # output: chain map from D_star_tensor -> C_star_tensor 
+    return [D_star_tensor,C_star_tensor];
 end;
