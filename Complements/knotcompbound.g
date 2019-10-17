@@ -421,6 +421,8 @@ KnotComplementWithBoundary:=function(arc)
             local
                 ind, 2cell;
 
+            if k=0 or n>2 then return 0; fi;
+
             if n=0 then
                 return k+1+2*Int((k-1)/len);
             elif n=1 then
