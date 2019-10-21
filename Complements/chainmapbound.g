@@ -43,7 +43,8 @@ ChainMapOfKnotBoundaryToComplement:=function(arg...)
         )
     );
 
-    H:=LowIndexSubgroupsFpGroup(D_star!.group,index)[index];
+    H:=LowIndexSubgroupsFpGroup(D_star!.group,index);
+    H:=H[Position(List(H,x->Index(D_star!.group,x)),index)];
     D_star_tensor:=TensorWithIntegersOverSubgroup(D_star,H);
     C_star_tensor:=TensorWithIntegersOverSubgroup(C_star,H);
 
@@ -52,13 +53,18 @@ ChainMapOfKnotBoundaryToComplement:=function(arg...)
 
     alpha:=function(v,n)
         local
-            vec;
+            vec, i, pair, int, inc;
 
-        vec:=List(v,D_i2p);
-        vec:=List(vec,
-        x->[SignInt(x[1])*iota!.mapping(n,AbsInt(x[1])),x[2]]);
-        vec:=List(vec,x->C_p2i(x));
-
+        vec:=List([1..C_star_tensor!.dimension(n)],x->0);
+        for i in [1..Length(v)] do
+            if v[i]<>0 then
+                pair:=D_i2p(i);
+                inc:=SignInt(pair[1])*iota!.mapping(n,AbsInt(pair[1]));
+                int:=C_p2i([inc,pair[2]]);
+                vec[int]:=v[i];
+            fi;
+        od;
+        
         return vec;
     end;
 
@@ -92,7 +98,7 @@ end;
 ################################################################################
 ##### Now: ######## ["reduced",false], #########################################
 ################### ["pair2int",Pair2Int], #####################################
-###################	["int2pair",Int2Pair] ])); #################################
+################### ["int2pair",Int2Pair] ])); #################################
 ################################################################################
 ################################################################################
 ################################################################################
