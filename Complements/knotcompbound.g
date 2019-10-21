@@ -134,21 +134,18 @@ KnotComplementWithBoundary:=function(arc)
             hcorrection:=[];
             for i in [1..len] do
                 for j in [1..len] do
-                    if CornerConfiguration(j,i)<>0 then
-                        if CornerConfiguration(j,i) in [1,4] then
+                    if CornerConfiguration(i,j)<>0 then
+                        if CornerConfiguration(i,j) in [1,4] then
                             Add(correction,1);
                             Add(correction,-1);
-                        else
-                            Add(correction,0);
-                            Add(correction,0);
-                        fi;
-                        if CornerConfiguration(i,j) in [1,4] then
                             Add(hcorrection,2);
                             Add(hcorrection,1);
                         else
-                            Add(hcorrection,0);
-                            Add(hcorrection,0);
-                        fi; 
+                            Add(correction,0);
+                            Add(correction,0);
+                            Add(hcorrection,1);
+                            Add(hcorrection,2);
+                        fi;
                     fi;
                 od;
             od;
@@ -421,8 +418,6 @@ KnotComplementWithBoundary:=function(arc)
             local
                 ind, 2cell;
 
-            if k=0 or n>2 then return 0; fi;
-
             if n=0 then
                 return k+1+2*Int((k-1)/len);
             elif n=1 then
@@ -430,10 +425,8 @@ KnotComplementWithBoundary:=function(arc)
                 if k in [1..threshold] then
                     if k>1 and 1c1[k-1]=1c1[k] then
                         ind:=HorizontalIndex(k);
-                        if ind=0 then ind:=2; fi;
                     elif 1c1[k]=1c1[k+1] then
                         ind:=HorizontalIndex(k);
-                        if ind=0 then ind:=1; fi;
                     fi;
                 elif k>threshold then
                     if 1c1[k-1]=1c1[k] then
@@ -447,8 +440,8 @@ KnotComplementWithBoundary:=function(arc)
                 2cell:=List(bound1[3][k]{[2..Length(bound1[3][k])]},x->inc(1,x));
                 2cell:=Concatenation([Length(2cell)],Set(2cell));
                 return Position(2c2,2cell);
-            else
-                return fail;
+            #else
+            #    return fail;
             fi;
         end;
 
