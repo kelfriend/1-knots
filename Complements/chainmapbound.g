@@ -2,7 +2,7 @@ Read("~/proj/Knots/knotcompbound.g");
 ChainMapOfKnotBoundaryToComplement:=function(arg...)
     local 
         iota, index, inv_mapping,
-        inclusion_preimage, C_star,
+        inclusion_preimage, C_star, C_star_copy,
         Bound, D_star, H, D_star_tensor,
         C_star_tensor, D_i2p, C_p2i, alpha;
 
@@ -22,9 +22,10 @@ ChainMapOfKnotBoundaryToComplement:=function(arg...)
     inclusion_preimage:={n,k}->Position(inv_mapping[n+1],k);
     
     C_star:=ChainComplexOfUniversalCover(iota!.target,false);
+    C_star_copy:=ChainComplexOfUniversalCover(iota!.target,false);
 
     Bound:={n,k}->List(
-        C_star!.boundary(n,iota!.mapping(n,k)),
+        C_star_copy!.boundary(n,iota!.mapping(n,k)),
         x->[SignInt(x[1])*inclusion_preimage(n-1,AbsInt(x[1])),x[2]]
     );
     
@@ -33,7 +34,7 @@ ChainMapOfKnotBoundaryToComplement:=function(arg...)
         rec(
             dimension:=iota!.source!.nrCells,
             boundary:=Bound,
-            elts:=C_star!.elts,
+            elts:=ShallowCopy(C_star!.elts),
             group:=C_star!.group,
             properties:=[
                 ["dimension",2],
@@ -43,10 +44,10 @@ ChainMapOfKnotBoundaryToComplement:=function(arg...)
         )
     );
 
-    H:=LowIndexSubgroupsFpGroup(D_star!.group,index);
-    H:=H[Position(List(H,x->Index(D_star!.group,x)),index)];
-    D_star_tensor:=TensorWithIntegersOverSubgroup(D_star,H);
+    H:=LowIndexSubgroupsFpGroup(C_star!.group,index);
+    H:=H[Position(List(H,x->Index(C_star!.group,x)),index)];
     C_star_tensor:=TensorWithIntegersOverSubgroup(C_star,H);
+    D_star_tensor:=TensorWithIntegersOverSubgroup(D_star,H);
 
     D_i2p:=EvaluateProperty(D_star_tensor,"int2pair");
     C_p2i:=EvaluateProperty(C_star_tensor,"pair2int");
