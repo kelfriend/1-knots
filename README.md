@@ -16,7 +16,7 @@ gap> for i in [0..3] do Print(Homology(comp,i),"\n"); od;
 [ 0 ]
 ```
 An optional argument of **"rand"** will enable random generation of 2-cells. This change results in the same complex, but the
-alternate ordering may offer different (but equivalent) presentations of the fundamental groups.
+alternate ordering may offer a different (but equivalent) presentation of the fundamental group.
 ```
 gap> pi_1:=FundamentalGroup(comp,1);
 #I  there are 2 generators and 1 relator of total length 6
