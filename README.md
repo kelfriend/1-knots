@@ -49,7 +49,7 @@ gap> FundamentalGroup(i,1);
 *f1*f3^-1*f2^-1*f3*f2*f3*f1^-1*f2*(f1*f2^-1*f3^-1)^3*f1*f3^-1*f2^-1*f3^-1*f2*f\
 3*f1^-1*f3^-1*f2^-1*(f3*f2)^2*f3*f1^-1, f1*f3^-1*f2^-1*f3^-1*f2*f3*f1^-1 ]
 ```
-### Complements/chainmapbound.g
+### Complements/chainmapbound.g (WIP!)
 **ChainMapOfKnotBoundaryToComplement** inputs the inclusion map from **KnotComplementWithBoundary** and outputs a chain map. This function uses existing HAP methods to compute a chain map from the chain complex of the universal covers of each of the two spaces. The final output is a chain map between the two complexes after having been tensored with the integers over some finite index subgroup of the knot group. Note that a specific subgroup may be used, but this is not implemented.
 This allows for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) for a more detailed treatment of this (and the above) processes. Below, I will compute this chain map for a 4-fold cover of the granny knot and then I will obtain group homomorphisms associated to the various homology groups.
 ```
