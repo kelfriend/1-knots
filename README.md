@@ -51,7 +51,7 @@ gap> FundamentalGroup(i,1);
 ```
 ### Complements/chainmapbound.g
 **ChainMapOfKnotBoundaryToComplement** inputs the inclusion map from **KnotComplementWithBoundary** and outputs a chain map. This function uses existing HAP methods to compute a chain map from the chain complex of the universal covers of each of the two spaces. The final output is a chain map between the two complexes after having been tensored with the integers over some finite index subgroup of the knot group. Note that a specific subgroup may be used, but this is not implemented.
-This allows for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) for a more detailed treatment of this (and the above) processes. Below, I will compute this chain map for a 4-fold cover of the granny knot and then I will obtain group homomorphisms associated to the 1<sup>st</sup> and 2<sup>nd</sup> homology groups.
+This allows for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) for a more detailed treatment of this (and the above) processes. Below, I will compute this chain map for a 4-fold cover of the granny knot and then I will obtain group homomorphisms associated to the various homology groups.
 ```
 gap> tre:=PureCubicalKnot(3,1);
 prime knot 1 with 3 crossings
@@ -65,6 +65,8 @@ Map of regular CW-complexes
 gap> iota:=ChainMapOfKnotBoundaryToComplement(i,4);
 Chain Map between complexes of length 3 . 
 
+gap> Homology(iota,0);
+[ g1, g2, g3 ] -> [ g1, g1, g1 ]
 gap> Homology(iota,1);
 [ g1, g2, g3, g4, g5, g6 ] -> [ g1^2*g2^2, g1^2*g2^-1*g3^2, g2^2*g3^2, g1^3*g2^2, g1^2*g3^2, g2^2*g3^3 ]
 gap> Homology(iota,2);
