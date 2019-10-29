@@ -1,3 +1,4 @@
+Read("~/proj/Knots/knotcomp.g");
 KnotComplementWithBoundary:=function(arc)
     local
         comp, RegularCWKnot, knot, hcorrection,
@@ -462,7 +463,7 @@ KnotComplementWithBoundary:=function(arc)
             target:=comp,
             mapping:=iota,
             properties:=[
-                ["inverseMapping",inv_mapping]
+                ["image",inv_mapping]
             ]
         )
     );
