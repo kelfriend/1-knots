@@ -1,4 +1,3 @@
-Read("~/proj/Knots/knotcomp.g");
 KnotComplementWithBoundary:=function(arc)
     local
         comp, RegularCWKnot, knot, hcorrection,
