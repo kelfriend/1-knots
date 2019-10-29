@@ -1,7 +1,8 @@
 Read("~/proj/Knots/knotcomp.g");
 KnotComplementWithBoundary:=function(arc)
     local
-        comp, RegularCWKnot, knot, hcorrection, threshold, inclusion, iota;
+        comp, RegularCWKnot, knot, hcorrection,
+        threshold, inclusion, iota, inv_mapping;
 
     comp:=KnotComplement(arc);
 
@@ -440,8 +441,8 @@ KnotComplementWithBoundary:=function(arc)
                 2cell:=List(bound1[3][k]{[2..Length(bound1[3][k])]},x->inc(1,x));
                 2cell:=Concatenation([Length(2cell)],Set(2cell));
                 return Position(2c2,2cell);
-            #else
-            #    return fail;
+            else
+                return fail;
             fi;
         end;
 
@@ -450,11 +451,20 @@ KnotComplementWithBoundary:=function(arc)
 
     iota:=inclusion([knot!.boundaries,comp!.boundaries]);
 
+    inv_mapping:=[[],[],[]];
+    inv_mapping[1]:=List([1..knot!.nrCells(0)],x->iota(0,x));
+    inv_mapping[2]:=List([1..knot!.nrCells(1)],x->iota(1,x));
+    inv_mapping[3]:=List([1..knot!.nrCells(2)],x->iota(2,x));
+
     return Objectify(
         HapRegularCWMap,
         rec(
             source:=knot,
             target:=comp,
-            mapping:=iota
-        ));
+            mapping:=iota,
+            properties:=[
+                ["inverseMapping",inv_mapping]
+            ]
+        )
+    );
 end;
