@@ -1,4 +1,3 @@
-Read("~/proj/Knots/knotcompbound.g");
 LiftedChainMap:=function(arg...)
     local 
         iota, subgroup, inv_mapping,
@@ -14,15 +13,15 @@ LiftedChainMap:=function(arg...)
         subgroup:=arg[2];
     fi;
 
-    if EvaluateProperty(iota,"inverseMapping")=fail then
+    if EvaluateProperty(iota,"image")=fail then
         inv_mapping:=[[],[],[]];
         inv_mapping[1]:=List([1..iota!.source!.nrCells(0)],x->iota!.mapping(0,x));
         inv_mapping[2]:=List([1..iota!.source!.nrCells(1)],x->iota!.mapping(1,x));
         inv_mapping[3]:=List([1..iota!.source!.nrCells(2)],x->iota!.mapping(2,x));
-        Add(iota!.properties,["inverseMapping",inv_mapping]);
+        Add(iota!.properties,["image",inv_mapping]);
     fi;
 
-    inclusion_preimage:={n,k}->Position(EvaluateProperty(iota,"inverseMapping")[n+1],k);
+    inclusion_preimage:={n,k}->Position(EvaluateProperty(iota,"image")[n+1],k);
     
     C_star:=ChainComplexOfUniversalCover(iota!.target,false);
     C_star_copy:=ChainComplexOfUniversalCover(iota!.target,false);
