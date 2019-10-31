@@ -51,22 +51,4 @@ gap> FundamentalGroup(i,1);
 ```
 ### Complements/chainmapbound.g (WIP!)
 **LiftedChainMap** inputs an inclusion map and outputs a chain map. This function uses existing HAP methods to compute a chain map from the chain complex of the universal covers of the source and target spaces. The final output is a chain map between the two complexes after having been tensored with the integers over some finite index subgroup of the knot group. Note that an integer can be used for a non-specific subgroup of that index.
-This allows for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) for a more detailed treatment of this (and the above) processes. Below, I will compute this chain map for a 4-fold cover of the granny knot and then I will obtain group homomorphisms associated to the various homology groups.
-```
-gap> tre:=PureCubicalKnot(3,1);
-prime knot 1 with 3 crossings
-
-gap> granny:=ArcPresentation(KnotSum(tre,tre));
-[ [ 7, 10 ], [ 6, 8 ], [ 7, 9 ], [ 8, 10 ], [ 2, 6 ], [ 5, 9 ], [ 1, 3 ], 
-  [ 2, 4 ], [ 3, 5 ], [ 1, 4 ] ]
-gap> i:=KnotComplementWithBoundary(granny);
-Map of regular CW-complexes
-
-gap> iota:=ChainMapOfKnotBoundaryToComplement(i,4);
-Chain Map between complexes of length 3 . 
-
-gap> Homology(iota,0);
-gap> Homology(iota,1);
-gap> Homology(iota,2);
-
-```
+This allows for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) for a more detailed treatment of this (and the above) processes.
