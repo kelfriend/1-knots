@@ -49,6 +49,6 @@ gap> FundamentalGroup(i,1);
 *f1*f3^-1*f2^-1*f3*f2*f3*f1^-1*f2*(f1*f2^-1*f3^-1)^3*f1*f3^-1*f2^-1*f3^-1*f2*f\
 3*f1^-1*f3^-1*f2^-1*(f3*f2)^2*f3*f1^-1, f1*f3^-1*f2^-1*f3^-1*f2*f3*f1^-1 ]
 ```
-### Complements/chainmapbound.g (WIP!)
+### Complements/liftedchainmap.g
 **LiftedChainMap** inputs an inclusion map and outputs a chain map. This function uses existing HAP methods to compute a chain map from the chain complex of the universal covers of the source and target spaces. The final output is a chain map between the two complexes after having been tensored with the integers over some finite index subgroup of the knot group. Note that an integer can be used for a non-specific subgroup of that index.
 This allows for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) for a more detailed treatment of this (and the above) processes.
