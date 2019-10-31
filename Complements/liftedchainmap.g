@@ -1,4 +1,23 @@
-LiftedChainMap:=function(arg...)
+LiftedChainMap:=function(Y,H)
+    local
+        U, G, L, n;
+
+        U:=UniversalCover(Y);
+        G:=U!.group;
+        
+        if IsInt(H) then
+            L:=LowIndexSubgroupsFpGroup(G,n);
+            n:=Position(List(L,x->Index(G,x)),H);
+            H:=L[n];
+        fi;
+
+        L:=EquivariantCWComplexToRegularCWComplex(U,H);
+        L:=BoundaryMap(L);
+        L:=ChainMap(L);
+
+    return L;
+end; 
+BadLiftedChainMap:=function(arg...)
     local 
         iota, subgroup, inv_mapping,
         inclusion_preimage, C_star, C_star_copy,
@@ -119,20 +138,3 @@ end;
 ################### ["pair2int",EvaluateProperty(R,"pair2int")], ###############
 ################### ["int2pair",EvaluateProperty(R,"int2pair")] ])); ###########
 ################################################################################
-inv:=function(Y,n)
-    local
-        U, G, L;
-
-    U:=UniversalCover(Y);
-    G:=U!.group;
-    L:=LowIndexSubgroupsFpGroup(G,n);;
-    L:=Filtered(L,H->Index(G,H)=n);;
-    L:=List(L,H->EquivariantCWComplexToRegularCWComplex(U,H));
-    L:=List(L,Y->BoundaryMap(Y));
-    L:=List(L,i->ChainMap(i));
-    L:=List(L,F->Homology(F,1));
-    L:=List(L,h->AbelianInvariants(Range(h)/Image(h)));
-    L:=SortedList(L);
-    
-    return L;
-end; 
