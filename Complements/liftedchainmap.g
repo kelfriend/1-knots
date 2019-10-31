@@ -87,7 +87,7 @@ LiftedChainMap:=function(arg...)
                 ["type","chainMap"],
                 ["characteristic",0]
             ]
-        )
+       )
     );
 end;
 ################################################################################
@@ -119,3 +119,20 @@ end;
 ################### ["pair2int",EvaluateProperty(R,"pair2int")], ###############
 ################### ["int2pair",EvaluateProperty(R,"int2pair")] ])); ###########
 ################################################################################
+inv:=function(Y,n)
+    local
+        U, G, L;
+
+    U:=UniversalCover(Y);
+    G:=U!.group;
+    L:=LowIndexSubgroupsFpGroup(G,n);;
+    L:=Filtered(L,H->Index(G,H)=n);;
+    L:=List(L,H->EquivariantCWComplexToRegularCWComplex(U,H));
+    L:=List(L,Y->BoundaryMap(Y));
+    L:=List(L,i->ChainMap(i));
+    L:=List(L,F->Homology(F,1));
+    L:=List(L,h->AbelianInvariants(Range(h)/Image(h)));
+    L:=SortedList(L);
+    
+    return L;
+end; 
