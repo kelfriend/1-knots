@@ -10,7 +10,7 @@ Regular CW-complex of dimension 3
 
 gap> Size(comp);
 395
-gap> for i in [0..3] do Print(Homology(comp,i),"\n"); od;
+gap> for i in [0..2] do Print(Homology(comp,i),"\n"); od;
 [ 0 ]
 [ 0 ]
 [ 0 ]
