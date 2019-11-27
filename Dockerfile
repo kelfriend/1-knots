@@ -12,4 +12,4 @@ RUN jupyter-nbextension enable rise --user --py
 
 USER gap
 
-WORKDIR $HOME/unipoly
+WORKDIR $HOME/1-knots
