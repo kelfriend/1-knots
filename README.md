@@ -1,5 +1,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/kelfriend/1-knots/master)
-## The below functions are included in [HAP](http://hamilton.nuigalway.ie/Hap/www/index.html) as of version 1.22.
+
+These algorithms, as well as previously implemented methods for lifting chain maps, allow for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) (submitted to Mathematics of Computation) for a more detailed treatment of this (and the below) processes, as well as a description of a certain knot invariant which can be obtained from a finite-index covering of a knot complement. The below functions are included in [HAP](http://hamilton.nuigalway.ie/Hap/www/index.html) as of version 1.22.
+
 ### Complements/knotcomp.g
 **KnotComplement** will input an arc presentation representing some knot and output a regular CW-decomposition of its complement.
 The below code computes the complement of the trefoil, displays the number of cells in the complex and obtains its 0<sup>th</sup>,
@@ -51,5 +53,3 @@ gap> FundamentalGroup(i,1);
 *f1*f3^-1*f2^-1*f3*f2*f3*f1^-1*f2*(f1*f2^-1*f3^-1)^3*f1*f3^-1*f2^-1*f3^-1*f2*f\
 3*f1^-1*f3^-1*f2^-1*(f3*f2)^2*f3*f1^-1, f1*f3^-1*f2^-1*f3^-1*f2*f3*f1^-1 ]
 ```
-
-#### These algorithms, as well as previously implemented methods for lifting chain maps, allow for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) (submitted to Mathematics of Computation) for a more detailed treatment of this (and the above) processes, as well as a description of a certain knot invariant which can be obtained from a finite-index covering of a knot complement.
