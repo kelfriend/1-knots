@@ -1,6 +1,6 @@
 FROM gapsystem/gap-docker
 
-MAINTAINER 
+MAINTAINER Someone
 
 COPY --chown=1000:1000 . $HOME/1-knots
 
