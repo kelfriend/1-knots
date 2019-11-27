@@ -1,4 +1,4 @@
-# The below functions are included in [HAP](http://hamilton.nuigalway.ie/Hap/www/index.html) as of version 1.22.
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/kelfriend/1-knots/master)# The below functions are included in [HAP](http://hamilton.nuigalway.ie/Hap/www/index.html) as of version 1.22.
 ### Complements/knotcomp.g
 **KnotComplement** will input an arc presentation representing some knot and output a regular CW-decomposition of its complement.
 The below code computes the complement of the trefoil, displays the number of cells in the complex and obtains its 0<sup>th</sup>,
