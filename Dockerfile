@@ -20,6 +20,7 @@ RUN    mkdir /home/gap/inst/ \
     && cd Hap1.23 \
     && ./configure \ 
     && make \
+    && cd .. \
     && ../bin/BuildPackages.sh \
     && test='JupyterKernel-*' \
     && mv ${test} JupyterKernel \
