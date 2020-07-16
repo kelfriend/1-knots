@@ -1,6 +1,6 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/kelfriend/1-knots/master)
 
-These algorithms, as well as previously implemented methods for lifting chain maps, allow for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) (submitted to Mathematics of Computation) for a more detailed treatment of this (and the below) processes, as well as a description of a certain knot invariant which can be obtained from a finite-index covering of a knot complement. The below functions are included in [HAP](http://hamilton.nuigalway.ie/Hap/www/index.html) as of version 1.22.
+These algorithms, as well as previously implemented methods for lifting chain maps, allow for computation of (co)homology with local coeffeicients. Please see [this preprint](http://hamilton.nuigalway.ie/preprints/LocalCoho.pdf) (submitted to Journal of Symbolic Computation) for a more detailed treatment of this (and the below) processes, as well as a description of a certain knot invariant which can be obtained from a finite-index covering of a knot complement. The below functions are included in [HAP](http://hamilton.nuigalway.ie/Hap/www/index.html) as of version 1.22.
 
 ### Complements/knotcomp.g
 **KnotComplement** will input an arc presentation representing some knot and output a regular CW-decomposition of its complement.
